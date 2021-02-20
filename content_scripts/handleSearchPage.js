@@ -1,5 +1,24 @@
 ;(function () {
-  setTimeout(handleSearchPageSO, 500)
+
+  const isDev = true
+
+  setTimeout(launch, 500)
+
+  function launch() {
+      if (isDev !== true) {
+        handleSearchPageSO()
+      } else {
+        try {
+          handleSearchPageSO()
+        } catch(err) {
+          const message = `
+          Error [ handleSearchPageSO ]
+          ${err.message || ''}
+          `
+          alert(message)
+        }
+      }
+  }
 })();
 
 function handleSearchPageSO() {
@@ -15,7 +34,6 @@ function customSortResultByExact() {
   }
 
   const shortedWords = prepareWords(searchWords)
-
   const resultsContainer = document.querySelector('.js-search-results > div:not(.ba)')
   const searchResultElems = [...resultsContainer.querySelectorAll('.question-summary.search-result')]
   const searchResultObjs = searchResultElems.map(formatResultToObject)
