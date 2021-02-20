@@ -5,19 +5,19 @@
   setTimeout(launch, 500)
 
   function launch() {
-      if (isDev !== true) {
+    if (isDev !== true) {
+      handleSearchPageSO()
+    } else {
+      try {
         handleSearchPageSO()
-      } else {
-        try {
-          handleSearchPageSO()
-        } catch(err) {
-          const message = `
+      } catch (err) {
+        const message = `
           Error [ handleSearchPageSO ]
           ${err.message || ''}
           `
-          alert(message)
-        }
+        alert(message)
       }
+    }
   }
 })();
 
