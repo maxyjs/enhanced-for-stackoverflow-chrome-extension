@@ -1,5 +1,5 @@
 ;(function () {
-  setTimeout( handleSearchPageSO , 500 )
+  setTimeout(handleSearchPageSO, 500)
 })();
 
 function handleSearchPageSO() {
@@ -16,7 +16,7 @@ function customSortResultByExact() {
 
   const shortedWords = prepareWords(searchWords)
 
-  const resultsContainer = document.querySelector('.js-search-results > div')
+  const resultsContainer = document.querySelector('.js-search-results > div:not(.ba)')
   const searchResultElems = [...resultsContainer.querySelectorAll('.question-summary.search-result')]
   const searchResultObjs = searchResultElems.map(formatResultToObject)
   const detectExactByKeywords = detectExact.bind(null, shortedWords)
@@ -29,17 +29,6 @@ function customSortResultByExact() {
   stylizeExactResults(exactResults)
   sortByExact(resultsContainer, exactResults)
 
-  function prepareWords(words) {
-    const shortedWords = words.map(word => {
-      let wordLowerCase = word.toLowerCase()
-      if (wordLowerCase.length < 5) {
-        return wordLowerCase
-      }
-      return wordLowerCase.slice(0, wordLowerCase.length - Math.ceil(wordLowerCase.length / 4));
-    });
-    return shortedWords
-  }
-
   function getSearchWords(queryString) {
     const allWords = queryString.trim().split(/\s+/g)
     const reg = /([\[])|(\.\.)|(^-)|(:)/
@@ -51,6 +40,17 @@ function customSortResultByExact() {
     })
 
     return words
+  }
+
+  function prepareWords(words) {
+    const shortedWords = words.map(word => {
+      let wordLowerCase = word.toLowerCase()
+      if (wordLowerCase.length < 5) {
+        return wordLowerCase
+      }
+      return wordLowerCase.slice(0, wordLowerCase.length - Math.ceil(wordLowerCase.length / 4));
+    });
+    return shortedWords
   }
 
   function formatResultToObject(result) {
