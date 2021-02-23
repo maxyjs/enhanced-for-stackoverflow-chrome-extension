@@ -48,7 +48,10 @@ function customSortResultByExact() {
   sortByExact(resultsContainer, exactResults)
 
   function getSearchWords(queryString) {
-    const allWords = queryString.trim().split(/\s+/g)
+    const sanitized = queryString.trim()
+      .replace(/title:/gi,'')
+      .replace(/body:/gi, '')
+    const allWords = sanitized.split(/\s+/g)
     const reg = /([\[])|(\.\.)|(^-)|(:)/
     let words = []
 
