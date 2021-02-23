@@ -22,10 +22,70 @@
 })();
 
 function handleSearchPageSO() {
-  customSortResultByExact()
+
+  const resultsContainer = document.querySelector('.js-search-results > div:not(.ba)')
+  const tokens = tokenizeSearch()
 }
 
-function customSortResultByExact() {
+function tokenizeSearch() {
+  const tokensContainer = {
+    allTokens: [],
+    queryParamsPhrases: [],
+    keywords: [],
+    keywordsSanitized: [],
+    keywordsShorted: [],
+    urlWithoutKeywords: '',
+    queryStringOfLocation: '',
+  }
+
+  tokensContainer.queryStringOfLocation = (new URL(document.location)).searchParams.get('q')
+  tokensContainer.allTokens = tokensContainer.queryStringOfLocation.split(/\s+/g)
+
+  const regexPhrases = /([\[])|(\.\.)|(^-)|(:)/
+
+  tokensContainer.allTokens.reduce((tokens, token) => {
+    if (regexPhrases.test(token)) {
+      tokens.queryParamsPhrases.push(token)
+    } else {
+      tokens.keywords.push(token)
+    }
+    return tokens
+  }, tokensContainer)
+
+  tokensContainer.queryParamsPhrases = tokensContainer.queryParamsPhrases.reduce((phrases, phrase) => {
+
+    if (phrase.startsWith('title:')) {
+      const word = phrase.replace('title:', '')
+      tokensContainer.keywords.push(word)
+      return phrases
+    }
+
+    if (phrase.startsWith('body:')) {
+      const word = phrase.replace('body:', '')
+      tokensContainer.keywords.push(word)
+      return phrases
+    }
+
+    phrases.push(phrase)
+    return phrases
+  }, [])
+
+
+  function getSearchWords(queryString) {
+    const allWords = queryString.split(/\s+/g)
+    const reg = /([\[])|(\.\.)|(^-)|(:)/
+    let words = []
+
+    words = allWords.filter(word => {
+      const match = reg.test(word)
+      return !match
+    })
+
+    return words
+  }
+}
+
+function customSortResultByExact(resultsContainer) {
   const queryString = (new URL(document.location)).searchParams.get('q')
   const searchWords = getSearchWords(queryString)
 
@@ -34,9 +94,9 @@ function customSortResultByExact() {
   }
 
   const shortedWords = prepareWords(searchWords)
-  const resultsContainer = document.querySelector('.js-search-results > div:not(.ba)')
-  const searchResultElems = [...resultsContainer.querySelectorAll('.question-summary.search-result')]
-  const searchResultObjs = searchResultElems.map(formatResultToObject)
+
+  const resultElems = [...resultsContainer.querySelectorAll('.question-summary.search-result')]
+  const searchResultObjs = resultElems.map(formatResultToObject)
   const detectExactByKeywords = detectExact.bind(null, shortedWords)
   const exactResults = searchResultObjs.filter(detectExactByKeywords)
 
@@ -49,7 +109,7 @@ function customSortResultByExact() {
 
   function getSearchWords(queryString) {
     const sanitized = queryString.trim()
-      .replace(/title:/gi,'')
+      .replace(/title:/gi, '')
       .replace(/body:/gi, '')
     const allWords = sanitized.split(/\s+/g)
     const reg = /([\[])|(\.\.)|(^-)|(:)/
@@ -107,4 +167,6 @@ function customSortResultByExact() {
     }
   }
 }
+
+
 
