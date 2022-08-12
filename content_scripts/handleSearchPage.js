@@ -1,6 +1,6 @@
 ;(function () {
 
-  const isDev = true
+  const isDev = false
 
   setTimeout(launch, 500)
 
